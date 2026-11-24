@@ -152,7 +152,7 @@ final class GameViewController: UIViewController {
         /* 4. Shrink the players, their name plates and the puffer so seats
               stop overlapping in the shorter space. */
         'html.kr-app-typing .pf-root { --pf-spr: 46px !important; --pf-perch: 48px !important; }',
-        'html.kr-app-typing .pf-root .pf-pbody { scale: 0.7; }',
+        'html.kr-app-typing .pf-root .pf-pbody { scale: 0.5; }',
         'html.kr-app-typing .pf-root .pf-plate { width: 56px !important; left: -28px !important; }',
         'html.kr-app-typing .pf-root .pf-name {',
         '  font-size: 12px !important; max-width: 100%; overflow: hidden; text-overflow: ellipsis;',
