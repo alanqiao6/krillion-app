@@ -72,8 +72,8 @@ final class GameViewController: UIViewController {
             name: UIResponder.keyboardWillChangeFrameNotification, object: nil
         )
         NotificationCenter.default.addObserver(
-            self, selector: #selector(keyboardWillHide),
-            name: UIResponder.keyboardWillHideNotification, object: nil
+            self, selector: #selector(keyboardDidHide),
+            name: UIResponder.keyboardDidHideNotification, object: nil
         )
 
         webView.load(URLRequest(url: Self.startURL))
@@ -91,10 +91,19 @@ final class GameViewController: UIViewController {
         guard let frame = note.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect else { return }
         let keyboard = view.convert(frame, from: nil)
         let covered = max(0, view.bounds.maxY - keyboard.minY)
-        setTyping(covered > Self.fullKeyboardHeight)
+        // Only switch the compact layout ON here. Switching it off waits for
+        // keyboardDidHide: the keyboard often hides and reappears in a blink
+        // (e.g. focus moving between boxes), and turning it off early flashes
+        // the banner ad over the answer box.
+        if covered > Self.fullKeyboardHeight {
+            setTyping(true)
+        } else if covered > 0 {
+            // A hardware keyboard's thin shortcut bar: normal layout.
+            setTyping(false)
+        }
     }
 
-    @objc private func keyboardWillHide() {
+    @objc private func keyboardDidHide() {
         setTyping(false)
     }
 
@@ -128,7 +137,28 @@ final class GameViewController: UIViewController {
         'html.kr-app-typing #fixed_container_bottom { visibility: hidden !important; }',
         'html.kr-app-typing, html.kr-app-typing * {',
         '  --kr-ad-bottom: 0px !important; --kr-ad-dock-lift: 0px !important;',
-        '}'
+        '}',
+        /* Puffer Party only:
+           3. Hide the top bar (room code, players left, menu, leave, sound,
+              chat) and move the category card to the very top. */
+        'html.kr-app-typing .pf-root .ds-hud,',
+        'html.kr-app-typing .pf-root .pf-leave,',
+        'html.kr-app-typing .pf-root .ds-mute,',
+        'html.kr-app-typing .pf-root .pf-chat-btn,',
+        'html.kr-app-typing body:has(.pf-root) button[aria-controls="site-menu"] {',
+        '  visibility: hidden !important; pointer-events: none !important;',
+        '}',
+        'html.kr-app-typing .pf-root .ds-card { top: 8px !important; }',
+        /* 4. Shrink the players, their name plates and the puffer so seats
+              stop overlapping in the shorter space. */
+        'html.kr-app-typing .pf-root { --pf-spr: 46px !important; --pf-perch: 48px !important; }',
+        'html.kr-app-typing .pf-root .pf-pbody { scale: 0.7; }',
+        'html.kr-app-typing .pf-root .pf-plate { width: 56px !important; left: -28px !important; }',
+        'html.kr-app-typing .pf-root .pf-name {',
+        '  font-size: 12px !important; max-width: 100%; overflow: hidden; text-overflow: ellipsis;',
+        '}',
+        'html.kr-app-typing .pf-root .pf-heart { width: 8px !important; height: 7px !important; }',
+        'html.kr-app-typing .pf-root .pf-meter { width: 24px !important; height: 4px !important; }'
       ].join('\\n');
 
       function addStyle() {
