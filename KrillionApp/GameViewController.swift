@@ -129,7 +129,7 @@ final class GameViewController: UIViewController {
         'html.kr-app-typing .ds-root .ds-card .rnd,',
         'html.kr-app-typing .ds-root .ds-card .hint { display: none !important; }',
         'html.kr-app-typing .ds-root .ds-card .prompt {',
-        '  font-size: 21px !important; line-height: 1.2 !important; margin: 0 !important;',
+        '  font-size: 24px !important; line-height: 1.2 !important; margin: 0 !important;',
         '}',
         /* 2. Hide the bottom banner ad and give its space back to the game.
               visibility (not display) keeps the ad loaded, so it reappears
